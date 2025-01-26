@@ -70,7 +70,27 @@ def astar(h, starting_state, goaltest):
     g = {starting_state : 0}
     Q.put((h(starting_state), starting_state))
 
-    
+    while not Q.empty():
+        f, current_state = Q.get()
+
+        if goaltest(current_state):
+            actions = []
+            while current_state in predecessor:
+                action, state = predecessor[current_state]
+                actions.append(action)
+                current_state = state
+            actions.reverse()
+            return actions
+        
+        for action, successor in current_state.successors():
+            g_successor = g[current_state] + action.cost
+            if successor not in g or g_successor < g[successor]:
+                g[successor] = g_successor
+                f = g_successor + h(successor)
+                Q.put((f, successor))
+                predecessor[successor] = (action, current_state)
+
+    return []
 
 
 if __name__ == "__main__":
